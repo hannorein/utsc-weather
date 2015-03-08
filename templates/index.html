@@ -69,6 +69,7 @@ svg {
 	background-color: #C86E29;
 }
 .footer {
+	padding-top: 6em;
 	font-size: 1em;
 	color: #FFF;
 }
@@ -111,7 +112,7 @@ function render(svgid,data) {
 	    
 	// Scale the range of the data
 	x.domain(d3.extent(data, function(d,i) { return i; }));
-	y.domain(d3.extent(data, function(d,i) { return 1.1*d; })).nice();
+	y.domain(d3.extent(data, function(d,i) { return d; })).nice();
 	console.log(x.domain);
 
 	// Add the valueline path.
