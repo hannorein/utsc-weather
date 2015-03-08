@@ -134,22 +134,8 @@ function render(svgid,data) {
 	// Add the Y Axis
 	svg.append("g")
 	.attr("class", "y axis")
-	.attr("transform", "translate("+padding+",0)")
+	.attr("transform", "translate(15,0)")
 	.call(yAxis);
-}
-function update(svgid){
-	var svg = d3.select(svgid);
-	// Set the ranges
-	var height = parseInt(svg.style("height"));
-	var padding = 0.08*height;
-	var y = d3.scale.linear().range([height-2.0*padding, padding]);
-	
-	// Define the axes
-	var yAxis = d3.svg.axis().scale(y)
-	    .orient("right").ticks(2);
-	svg.selectAll("g.y.axis")
-	        .call(yAxis);
-	console.log("updates");
 }
 </script>
 </head>
@@ -164,28 +150,15 @@ function update(svgid){
 		<div class="bigtext">{{value|safe}}</div>
 	</div>
 	<script>
-		render("#viz{{loop.index0}}",{{history|safe}});
+		data{{loop.index0}} = {{history|safe}};
+		render("#viz{{loop.index0}}",data{{loop.index0}});
 		$("#box{{loop.index0}}").click(function() {
 			var svg = d3.select("#viz{{loop.index0}}");
 			svg.selectAll("g.y.axis").remove();
 
-			$( this ).animate({"height":"100%"}, 500, function() {
-					// Set the ranges
-					var width = parseInt(svg.style("width"));
-					var height = parseInt(svg.style("height"));
-					svg.attr("viewBox","0 0 "+width+" "+height);
-					var padding = 0.08*height;
-					var x = d3.scale.linear().range([0, width]);
-					var y = d3.scale.linear().range([height-2.0*padding, padding]);
-
-					// Define the axes
-					var yAxis = d3.svg.axis().scale(y)
-					    .orient("right").ticks(2);
-					// Add the Y Axis
-					svg.append("g")
-					.attr("class", "y axis")
-					.attr("transform", "translate("+padding+",0)")
-					.call(yAxis);
+			$( this ).animate({"height":"80%"}, 400, function() {
+					svg.selectAll("*").remove();
+					render("#viz{{loop.index0}}",data{{loop.index0}});
 				});
 		});
 		</script>
