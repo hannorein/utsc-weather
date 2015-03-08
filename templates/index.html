@@ -45,16 +45,17 @@ div {
     	top: 0;
     	left: 0;
 	width: 100%;
-	height: 6em;
+	height: 100%;
 	padding-top: 0.8em;
 	text-align: center;
 }
 svg {
+	display: inline-block;
 	position: absolute;
     	top: 0;
     	left: 0;
 	width: 100%;
-	height: 6em;
+	height: 100%;
 	opacity: 0.5;
 }
 .box0 {
@@ -97,14 +98,15 @@ svg {
 }
 </style>
 <script src="/static/d3.v3.min.js"></script>
+<script src="/static/jquery.min.js"></script>
 <script>
 function render(svgid,data) {
 	var svg = d3.select(svgid);
-	console.log(svg);
-
+	
 	// Set the ranges
 	var width = parseInt(svg.style("width"));
 	var height = parseInt(svg.style("height"));
+	svg.attr("viewBox","0 0 "+width+" "+height);
 	var padding = 0.08*height;
 	var x = d3.scale.linear().range([0, width]);
 	var y = d3.scale.linear().range([height-2.0*padding, padding]);
@@ -123,7 +125,6 @@ function render(svgid,data) {
 	// Scale the range of the data
 	x.domain(d3.extent(data, function(d,i) { return i; }));
 	y.domain(d3.extent(data, function(d,i) { return d; })).nice();
-	console.log(x.domain);
 
 	// Add the valueline path.
 	svg.append("path")
@@ -132,9 +133,23 @@ function render(svgid,data) {
 
 	// Add the Y Axis
 	svg.append("g")
-	.attr("class", "axis")
+	.attr("class", "y axis")
 	.attr("transform", "translate("+padding+",0)")
 	.call(yAxis);
+}
+function update(svgid){
+	var svg = d3.select(svgid);
+	// Set the ranges
+	var height = parseInt(svg.style("height"));
+	var padding = 0.08*height;
+	var y = d3.scale.linear().range([height-2.0*padding, padding]);
+	
+	// Define the axes
+	var yAxis = d3.svg.axis().scale(y)
+	    .orient("right").ticks(2);
+	svg.selectAll("g.y.axis")
+	        .call(yAxis);
+	console.log("updates");
 }
 </script>
 </head>
@@ -143,12 +158,38 @@ function render(svgid,data) {
 	<h1><img src="/static/utsclogo.png"> Weather Station</h1>
 	<h2>Current conditions and seven day history</h2>
 	{% for value,history in current_conditions: %}
-	<div class="box{{loop.index0%6}}"> 
-		<svg id="viz{{loop.index0}}"></svg>
+	<div class="box{{loop.index0%6}}" id="box{{loop.index0}}"> 
+		<svg id="viz{{loop.index0}}" preserveAspectRatio="none"></svg>
 
 		<div class="bigtext">{{value|safe}}</div>
-		<script>render("#viz{{loop.index0}}",{{history|safe}})</script>
 	</div>
+	<script>
+		render("#viz{{loop.index0}}",{{history|safe}});
+		$("#box{{loop.index0}}").click(function() {
+			var svg = d3.select("#viz{{loop.index0}}");
+			svg.selectAll("g.y.axis").remove();
+
+			$( this ).animate({"height":"100%"}, 500, function() {
+					// Set the ranges
+					var width = parseInt(svg.style("width"));
+					var height = parseInt(svg.style("height"));
+					svg.attr("viewBox","0 0 "+width+" "+height);
+					var padding = 0.08*height;
+					var x = d3.scale.linear().range([0, width]);
+					var y = d3.scale.linear().range([height-2.0*padding, padding]);
+
+					// Define the axes
+					var yAxis = d3.svg.axis().scale(y)
+					    .orient("right").ticks(2);
+					// Add the Y Axis
+					svg.append("g")
+					.attr("class", "y axis")
+					.attr("transform", "translate("+padding+",0)")
+					.call(yAxis);
+				});
+		});
+		</script>
+	</script>
 	{% endfor %}
 	<div class="footer">
 		UTSC Weather Station. Weather conditions from the University of Toronto Scarborough campus. Monitored by the Department of Physical and Environmental Sciences. Website by Hanno Rein. Source code available on <a href="https://github.com/hannorein/utsc-weather">github</a>.
