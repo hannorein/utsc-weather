@@ -164,7 +164,7 @@ function render(svgid,data,large) {
 					render("#viz{{loop.index0}}",data{{loop.index0}},large);
 				});
 			$( this ).children(".bigtext").animate({"padding-top": large?"0em":"0.8em", "font-size": large?"1em":"2em"}, 400);
-			$( this ).find("svg").animate({"opacity": large?1:0.5}, 400);
+			$( this ).children("svg").animate({"opacity": large?1:0.5}, 400);
 		});
 		</script>
 	</script>
