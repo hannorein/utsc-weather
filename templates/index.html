@@ -19,6 +19,13 @@ h1{
 	font-size: 4em;
 	padding-top: 1em;
 }
+h1 img{
+	position: relative;
+	top: 0.045em;
+	padding-right: 0.2em;
+	height: 0.8em;
+	width: 2.3038961em;
+}
 h2{
 	font-size: 1em;
 	padding-bottom: 4em;
@@ -85,6 +92,7 @@ svg {
 	shape-rendering: crispEdges;
 } 
 .axis text{
+	font-size: 0.5em;
 	fill: white;
 }
 </style>
@@ -132,7 +140,7 @@ function render(svgid,data) {
 </head>
 
 <body>
-	<h1>UTSC Weather Station</h1>
+	<h1><img src="/static/utsclogo.png"> Weather Station</h1>
 	<h2>Current conditions and seven day history</h2>
 	{% for value,history in current_conditions: %}
 	<div class="box{{loop.index0%6}}"> 
