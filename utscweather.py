@@ -16,14 +16,32 @@ def page_main():
 
     hourly = urllib2.urlopen("http://weather.utsc.utoronto.ca/Hourly_current_month.dat").read().strip().split("\n")[4:]
     
-    temp_array = []
-    for h in hourly[-48:]:
-        fields = h.split(",")
-        temp_array.append(float(fields[2]))
+    data = []
+
+    mapper = {
+        0:2,   #temp
+        1:3,   #rel
+        2:5,   #baro
+        3:7,   #wind speed
+        4:8,   #wind direction
+        5:6,   #rain
+        6:9,   #solar
+        7:10,   #sky
+        8:11,   #hum ind
+        9:4,   #dew
+        10:12,   #wind chill
+    }
+    for i,d in enumerate(rawdata):
+        temp_array = []
+        for h in hourly[-24*7:]:
+            fields = h.split(",")
+            temp_array.append(float(fields[mapper[i]]))
+        data.append([d,json.dumps(temp_array)])
+
      
 
     return render_template("index.html",
-        current_conditions = rawdata,
+        current_conditions = data,
         temp_array = json.dumps(temp_array),
         )
 

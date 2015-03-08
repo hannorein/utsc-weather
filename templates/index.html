@@ -10,12 +10,19 @@ body {
 a {
     color: #FFF;
 }
-h1 {
+h1, h2 {
 	display: block;
 	text-align: center;
-	padding: 1em;
-	font-size: 4em;
 	margin: 0;
+}
+h1{
+	font-size: 4em;
+	padding-top: 1em;
+}
+h2{
+	font-size: 1em;
+	padding-bottom: 4em;
+	font-weight: normal;
 }
 div {
 	display: block;
@@ -79,62 +86,61 @@ svg {
 }
 </style>
 <script src="/static/d3.v3.min.js"></script>
+<script>
+function render(svgid,data) {
+	var svg = d3.select(svgid);
+	console.log(svg);
+
+	// Set the ranges
+	var width = parseInt(svg.style("width"));
+	var height = parseInt(svg.style("height"));
+	var padding = 0.05*height;
+	var x = d3.scale.linear().range([0, width]);
+	var y = d3.scale.linear().range([height-2.0*padding, padding]);
+
+	// Define the axes
+	var yAxis = d3.svg.axis().scale(y)
+	    .orient("right").ticks(2);
+
+	// Define the line
+	var valueline = d3.svg.area()
+	    .x(function(d,i) { return x(i); })
+	    .y0(height)
+	    .y1(function(d,i) { return y(d); })
+	.interpolate("basis");
+	    
+	// Scale the range of the data
+	x.domain(d3.extent(data, function(d,i) { return i; }));
+	y.domain(d3.extent(data, function(d,i) { return 1.1*d; })).nice();
+	console.log(x.domain);
+
+	// Add the valueline path.
+	svg.append("path")
+	.attr("class", "area")
+	.attr("d", valueline(data));
+
+	// Add the Y Axis
+	svg.append("g")
+	.attr("class", "axis")
+	.attr("transform", "translate("+padding+",0)")
+	.call(yAxis);
+}
+</script>
 </head>
 
 <body>
 	<h1>UTSC Weather Station</h1>
-	{% for value in current_conditions: %}
+	<h2>Current observations and 7 day history</h2>
+	{% for value,history in current_conditions: %}
 	<div class="box{{loop.index0%6}}"> 
-		<svg id="viz"></svg>
+		<svg id="viz{{loop.index0}}"></svg>
+
 		<div class="bigtext">{{value|safe}}</div>
+		<script>render("#viz{{loop.index0}}",{{history|safe}})</script>
 	</div>
 	{% endfor %}
 	<div class="footer">
 		UTSC Weather Station. Weather conditions from the University of Toronto Scarborough campus. Monitored by the Department of Physical and Environmental Sciences. Website by Hanno Rein. Source code available on <a href="https://github.com/hannorein/utsc-weather">github</a>.
 	</div>
-<script>
-var svg = d3.select("#viz");
-
-// Set the ranges
-var width = parseInt(svg.style("width"));
-var height = parseInt(svg.style("height"));
-var padding = 0.05*height;
-var x = d3.scale.linear().range([0, width]);
-var y = d3.scale.linear().range([height-2.0*padding, padding]);
-
-// Define the axes
-var yAxis = d3.svg.axis().scale(y)
-    .orient("right").ticks(2);
-
-// Define the line
-var valueline = d3.svg.area()
-    .x(function(d,i) { return x(i); })
-    .y0(height)
-    .y1(function(d,i) { return y(d); })
-.interpolate("basis");
-    
-// Adds the svg canvas
-
-// Get the data
-data = {{temp_array|safe}};
-
-// Scale the range of the data
-x.domain(d3.extent(data, function(d,i) { return i; }));
-y.domain(d3.extent(data, function(d,i) { return 1.1*d; })).nice();
-console.log(x.domain);
-
-// Add the valueline path.
-svg.append("path")
-.attr("class", "area")
-.attr("d", valueline(data));
-
-// Add the Y Axis
-svg.append("g")
-.attr("class", "axis")
-.attr("transform", "translate("+padding+",0)")
-.call(yAxis);
-
-
-</script>
 </body>
 </html>
