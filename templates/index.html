@@ -130,7 +130,7 @@ function render(svgid,data) {
 
 <body>
 	<h1>UTSC Weather Station</h1>
-	<h2>Current observations and 7 day history</h2>
+	<h2>Current conditions and seven day history</h2>
 	{% for value,history in current_conditions: %}
 	<div class="box{{loop.index0%6}}"> 
 		<svg id="viz{{loop.index0}}"></svg>
