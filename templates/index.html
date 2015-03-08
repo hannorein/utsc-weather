@@ -50,7 +50,7 @@ div {
 	<h1>UTSC Weather Station</h1>
 	{% for value in current_conditions: %}
 	<div class="box{{loop.index0%6}}"> 
-		{{value}}
+		{{value|safe}}
 	</div>
 	{% endfor %}
 	<div class="footer">
