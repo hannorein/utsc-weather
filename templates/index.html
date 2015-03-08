@@ -22,7 +22,7 @@ h1{
 h1 img{
 	position: relative;
 	top: 0.045em;
-	padding-right: 0.2em;
+	padding-right: 0.045em;
 	height: 0.8em;
 	width: 2.3038961em;
 }
@@ -107,7 +107,7 @@ function render(svgid,data) {
 	var height = parseInt(svg.style("height"));
 	var padding = 0.08*height;
 	var x = d3.scale.linear().range([0, width]);
-	var y = d3.scale.linear().range([height-2.0*padding, padding]);
+	var y = d3.scale.linear().range([height-1.0*padding, padding]);
 
 	// Define the axes
 	var yAxis = d3.svg.axis().scale(y)
