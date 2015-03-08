@@ -100,7 +100,7 @@ svg {
 <script src="/static/d3.v3.min.js"></script>
 <script src="/static/jquery.min.js"></script>
 <script>
-function render(svgid,data) {
+function render(svgid,data,large) {
 	var svg = d3.select(svgid);
 	
 	// Set the ranges
@@ -113,7 +113,7 @@ function render(svgid,data) {
 
 	// Define the axes
 	var yAxis = d3.svg.axis().scale(y)
-	    .orient("right").ticks(2);
+	    .orient("right").ticks(large ? 6 : 2);
 
 	// Define the line
 	var valueline = d3.svg.area()
@@ -151,15 +151,20 @@ function render(svgid,data) {
 	</div>
 	<script>
 		data{{loop.index0}} = {{history|safe}};
-		render("#viz{{loop.index0}}",data{{loop.index0}});
+		$("#box{{loop.index0}}").data("large",0); 
+		render("#viz{{loop.index0}}",data{{loop.index0}},0);
 		$("#box{{loop.index0}}").click(function() {
+			var large = !($(this).data("large")); 
+			$(this).data("large",large); 
+
 			var svg = d3.select("#viz{{loop.index0}}");
 			svg.selectAll("g.y.axis").remove();
-
-			$( this ).animate({"height":"80%"}, 400, function() {
+			$( this ).animate({"height": large? "80%" : "6em"}, 400, function() {
 					svg.selectAll("*").remove();
-					render("#viz{{loop.index0}}",data{{loop.index0}});
+					render("#viz{{loop.index0}}",data{{loop.index0}},large);
 				});
+			$( this ).children(".bigtext").animate({"padding-top": large?"0em":"0.8em", "font-size": large?"1em":"2em"}, 400);
+			$( this ).find("svg").animate({"opacity": large?1:0.5}, 400);
 		});
 		</script>
 	</script>
