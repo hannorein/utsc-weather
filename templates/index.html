@@ -74,16 +74,18 @@ svg {
 	color: #FFF;
 }
 .area {
+	fill: white;
 	opacity: .5;
 }
 .axis path,
 .axis line {
 	fill: none;
-	stroke: #000;
+	stroke: white;
 	stroke-width: 1;
 	shape-rendering: crispEdges;
 } 
 .axis text{
+	fill: white;
 }
 </style>
 <script src="/static/d3.v3.min.js"></script>
@@ -95,7 +97,7 @@ function render(svgid,data) {
 	// Set the ranges
 	var width = parseInt(svg.style("width"));
 	var height = parseInt(svg.style("height"));
-	var padding = 0.05*height;
+	var padding = 0.08*height;
 	var x = d3.scale.linear().range([0, width]);
 	var y = d3.scale.linear().range([height-2.0*padding, padding]);
 
