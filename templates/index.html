@@ -14,30 +14,31 @@ h1 {
 	text-align: center;
 	padding: 1em;
 	font-size: 4em;
+	margin: 0;
 }
 div {
-	text-align: center;
 	display: block;
+	text-align: center;
 	color: #000;
 	padding: 1em;
 	font-size: 2em;
 }
-.box1 {
+.box0 {
 	background-color: #688B0E;
 }
-.box2 {
+.box1 {
 	background-color: #5A9ADC;
 }
-.box3 {
+.box2 {
 	background-color: #8F7EA2;
 }
-.box4 {
+.box3 {
 	background-color: #B5AA2D;
 }
-.box5 {
+.box4 {
 	background-color: #BFBFAF;
 }
-.box6 {
+.box5 {
 	background-color: #C86E29;
 }
 .footer {
@@ -47,24 +48,11 @@ div {
 </style>
 <body>
 	<h1>UTSC Weather Station</h1>
-	<div class="box1"> 
-		Temperature: 1C
+	{% for value in current_conditions: %}
+	<div class="box{{loop.index0%6}}"> 
+		{{value}}
 	</div>
-	<div class="box2"> 
-		Wind: 2 knots
-	</div>
-	<div class="box3"> 
-		Humidity: 40%
-	</div>
-	<div class="box4"> 
-		Temperature: 1C
-	</div>
-	<div class="box5"> 
-		Wind: 2 knots
-	</div>
-	<div class="box6"> 
-		Humidity: 40%
-	</div>
+	{% endfor %}
 	<div class="footer">
 		UTSC Weather Station. Weather conditions from the University of Toronto Scarborough campus. Monitored by the Department of Physical and Environmental Sciences. Website by Hanno Rein. Source code available on <a href="https://github.com/hannorein/utsc-weather">github</a>.
 	</div>
