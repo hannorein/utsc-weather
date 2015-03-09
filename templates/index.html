@@ -100,6 +100,7 @@ svg {
 <script src="/static/d3.v3.min.js"></script>
 <script src="/static/jquery.min.js"></script>
 <script>
+var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 function render(svgid,data,large) {
 	var svg = d3.select(svgid);
 	
@@ -108,23 +109,20 @@ function render(svgid,data,large) {
 	var height = parseInt(svg.style("height"));
 	svg.attr("viewBox","0 0 "+width+" "+height);
 	var padding = 0.08*height;
-	var x = d3.scale.linear().range([0, width]);
+	var x = d3.time.scale().range([0, width]);
 	var y = d3.scale.linear().range([height-1.0*padding, padding]);
 
-	// Define the axes
-	var yAxis = d3.svg.axis().scale(y)
-	    .orient("right").ticks(large ? 6 : 2);
 
 	// Define the line
 	var valueline = d3.svg.area()
-	    .x(function(d,i) { return x(i); })
+	    .x(function(d,i) { return x(d.date); })
 	    .y0(height)
-	    .y1(function(d,i) { return y(d); })
+	    .y1(function(d,i) { return y(d.value); })
 	.interpolate("basis");
 	    
 	// Scale the range of the data
-	x.domain(d3.extent(data, function(d,i) { return i; }));
-	y.domain(d3.extent(data, function(d,i) { return d; })).nice();
+	x.domain(d3.extent(data, function(d,i) { return d.date; }));
+	y.domain(d3.extent(data, function(d,i) { return d.value; })).nice();
 
 	// Add the valueline path.
 	svg.append("path")
@@ -132,10 +130,32 @@ function render(svgid,data,large) {
 	.attr("d", valueline(data));
 
 	// Add the Y Axis
+	var yAxis = d3.svg.axis().scale(y)
+	    .orient("right").ticks(large ? 6 : 2);
+
 	svg.append("g")
 	.attr("class", "y axis")
 	.attr("transform", "translate(15,0)")
 	.call(yAxis);
+	
+	if (large){
+		// Add the X Axis
+		var pad = 15.;
+		var xl = x.invert(pad);
+		var xr = x.invert(width-2.*pad);
+		var x = d3.time.scale()
+			.range([pad, width-2.*pad])
+			.domain([xl,xr]);
+	
+		var xAxis = d3.svg.axis().scale(x)
+			.tickFormat(d3.time.format('%a'))
+		    	.orient("bottom").ticks(7);
+
+		svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0,"+(height-padding)+")")
+		.call(xAxis);
+	}
 }
 </script>
 </head>
@@ -151,6 +171,9 @@ function render(svgid,data,large) {
 	</div>
 	<script>
 		data{{loop.index0}} = {{history|safe}};
+		data{{loop.index0}}.forEach(function(d) {
+			d.date = parseDate(d.date);
+		});
 		$("#box{{loop.index0}}").data("large",0); 
 		render("#viz{{loop.index0}}",data{{loop.index0}},0);
 		$("#box{{loop.index0}}").click(function() {
@@ -159,6 +182,7 @@ function render(svgid,data,large) {
 
 			var svg = d3.select("#viz{{loop.index0}}");
 			svg.selectAll("g.y.axis").remove();
+			svg.selectAll("g.x.axis").remove();
 			$( this ).animate({"height": large? "80%" : "6em"}, 400, function() {
 					svg.selectAll("*").remove();
 					render("#viz{{loop.index0}}",data{{loop.index0}},large);

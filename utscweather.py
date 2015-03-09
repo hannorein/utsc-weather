@@ -35,7 +35,7 @@ def page_main():
         temp_array = []
         for h in hourly[-24*7:]:
             fields = h.split(",")
-            temp_array.append(float(fields[mapper[i]]))
+            temp_array.append({"date":fields[0].strip("\""), "value":float(fields[mapper[i]])})
         data.append([d,json.dumps(temp_array)])
 
      
