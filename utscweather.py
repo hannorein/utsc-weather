@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import Flask, abort, render_template, send_from_directory, request, redirect, Response
-import urllib2
+import urllib.request
 import json
 
 app = Flask(__name__)
@@ -8,14 +8,17 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index.html')
 def page_main():
-    rawdata = urllib2.urlopen("https://weather.utsc.utoronto.ca/data/current_conditions.txt").read()
+    with urllib.request.urlopen("https://weather.utsc.utoronto.ca/data/current_conditions.txt") as response:
+        rawdata = response.read().decode("ascii")
     rawdata = rawdata.replace("deg C","&#176;C")
     rawdata = rawdata.replace("deg","&#176;")
     rawdata = rawdata.replace("^2","&#178;")
     rawdata = rawdata.split("\n")[6:17]
 
-    hourly = urllib2.urlopen("https://weather.utsc.utoronto.ca/data/Hourly_current_month.dat").read().strip().split("\n")[4:]
-    
+    with urllib.request.urlopen("https://weather.utsc.utoronto.ca/data/Hourly_current_month.dat") as response:
+        hourly = response.read().decode("ascii")
+    hourly = hourly.split("\n")
+
     data = []
 
     mapper = {
@@ -35,10 +38,11 @@ def page_main():
         temp_array = []
         for h in hourly[-24*7:]:
             fields = h.strip().split(",")
+            if len(fields)<16:
+                continue
             temp_array.append({"date":fields[0].strip("\""), "value":float(fields[mapper[i]])})
         data.append([d,json.dumps(temp_array)])
 
-     
 
     return render_template("index.html",
         current_conditions = data,
